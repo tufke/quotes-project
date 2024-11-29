@@ -9,7 +9,7 @@ Read the following instructions to get an understanding of the service.
 - [Functional summary](functional-summary)
 - [Generic configuration in spring boot starters](generic-configuration-in-spring-boot-starters)
 - [Service-api](service-api)
-- [Client folders](client folders)
+- [Client folders](client-folders)
 - [Internal-api](internal-api)
 - [Implementing the apis](implementing-the-apis)
 - [Security](security)

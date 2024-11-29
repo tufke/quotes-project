@@ -90,24 +90,37 @@ This will start a server at port 11000. open a browser and navigate to:
 you will get redirected to the swagger-ui page that was included during the build of the service
 available on /quotes-service/swagger-ui/index.html
 
-<img src="images/swagger-ui.png" alt="Swagger-ui" width="700">
+<img src="images/swagger-ui.png" alt="Swagger-ui" width="1000">
 
 in the top right corner you can click on the authorize button to enter needed request headers that should be available
 in every rest call.
 
 
-<img src="images/authorize.png" alt="Swagger-ui Authorize" width="700">
+<img src="images/authorize.png" alt="Swagger-ui Authorize" width="1000">
 
 enter a securitytoken (anything will do for now) and enter an userid. Do not forget to push both `authorize` buttons
 
 
-<img src="images/get-random-quote.png" alt="Swagger-ui GetRandomQuote" width="700">
+<img src="images/get-random-quote.png" alt="Swagger-ui GetRandomQuote" width="1000">
 
 open GetRandomQuote and click on the `Try it out` button. You will see a big blue bar to execute a call to the getRandomQuote
 endpoint. When you scroll down you will see some possible responses. the first one is an example of the success response
 we want to see. press the blue execute bar.
 
 
-<img src="images/get-random-quote-result.png" alt="Swagger-ui GetRandomQuoteResult" width="700">
+<img src="images/get-random-quote-result.png" alt="Swagger-ui GetRandomQuoteResult" width="1000">
 
 After executing the getRadomQuote call you will see the json response in the black box. 
+
+Other calls that can be used:
+- CreateQuote
+- CreateRatingByQuoteId
+- DeleteQuoteById
+- DeleteRatingById
+- GetQuoteById
+- GetQuotes
+- GetRandomQuote
+- GetRatingById
+- GetRatingsByQuoteId
+- UpdateQuoteById
+- UpdateRatingById
