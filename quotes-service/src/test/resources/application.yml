@@ -1,0 +1,15 @@
+spring:
+  profiles:
+    active:
+      - database
+
+security.basic.enabled: false
+
+scheduler.enabled: false
+
+service.starter.problem.enabled: true
+service.starter.jackson.enabled: true
+service.starter.logging.enabled: true
+service.starter.logging.includeHeaders: true
+service.starter.logging.includeQueryString: true
+service.starter.logging.includePayload: true

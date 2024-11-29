@@ -1,0 +1,9 @@
+rootProject.name = 'quotes-project'
+
+includeBuild("quotes-service")
+includeBuild("quotes-service-api")
+includeBuild("dummyjson-external-api")
+
+
+
+

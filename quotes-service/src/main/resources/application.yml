@@ -1,0 +1,35 @@
+spring:
+  application:
+    name: ${rootProject.name}
+  profiles:
+    active:
+      - database
+
+security.basic.enabled: false
+
+
+service:
+  dummyjson-service:
+    gateway-url: https://dummyjson.com
+    connection-timeout-millis: 35000
+    read-timeout-millis: 30000
+    logging: true
+
+scheduler:
+  dummyjson:
+    quote-processor:
+      cron: 0 0 4 * * ?
+
+
+springdoc.swagger-ui.enabled: true
+springdoc.show-actuator: true
+springdoc.paths-to-exclude: /error
+springdoc.swagger-ui.displayOperationId: true
+springdoc.swagger-ui.displayRequestDuration: true
+
+service.starter.problem.enabled: true
+service.starter.jackson.enabled: true
+service.starter.logging.enabled: true
+service.starter.logging.includeHeaders: true
+service.starter.logging.includeQueryString: true
+service.starter.logging.includePayload: true

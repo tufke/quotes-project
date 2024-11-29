@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%black(%d{ISO8601}) %highlight(%-5level) [%blue(%t)] %yellow(%C{1}): %msg%n%throwable</pattern>
+        </encoder>
+    </appender>
+
+    <logger name="org.springframework" level="info" />
+    <logger name="org.springframework.web" level="warn" />
+    <logger name="org.springframework.test" level="warn" />
+    <logger name="org.springframework.test.context.transaction" level="info" />
+    <logger name="org.hibernate" level="info" />
+    <logger name="org.hibernate.SQL" level="debug" />
+    <logger name="org.hibernate.type.descriptor.sql.BasicBinder" level="trace" />
+    <logger name="org.apache" level="off" />
+    <logger name="com.zaxxer.hikari" level="info" />
+    <logger name="nl.kabisa" level="debug" />
+
+    <root level="warn">
+        <appender-ref ref="CONSOLE" />
+    </root>
+
+</configuration>

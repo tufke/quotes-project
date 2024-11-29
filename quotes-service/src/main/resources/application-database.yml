@@ -1,0 +1,20 @@
+server:
+  port: 11000
+  servlet:
+    context-path: /quotes-service
+
+spring:
+  jpa:
+    lookup:
+      show-sql: false
+      generate-ddl: true
+quotes.datasource:
+  driverClassName: org.hsqldb.jdbcDriver
+  url: jdbc:hsqldb:mem:QuotesService
+  username: quotesUser
+  password: quotesPass
+  hikari.connection-test-query: SELECT 1
+  hibernate-dialect: org.hibernate.dialect.HSQLDialect
+  hikari.leak-detection-threshold: 10000
+
+spring.datasource.hikari.leak-detection-threshold: 10000

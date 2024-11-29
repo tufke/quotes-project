@@ -1,0 +1,309 @@
+buildscript {
+    ext {
+        serviceSpringBomVersion = '2024.Q4.0-SNAPSHOT'
+
+        openapiGeneratorVersion = '7.6.0'
+
+        internalApiBasepackage = 'nl.kabisa.service.quotes'
+        internalApiFilename = 'quotes-service-api.yaml'
+        internalApiGeneratedloc = project.layout.buildDirectory.dir("openapi/internal-api").get().asFile.toString()
+
+        dummyjsonExternalApiBasepackage = 'nl.kabisa.service.quotes.dummyjson'
+        dummyjsonExternalApiFilename = 'dummyjson-external-api.yaml'
+        dummyjsonExternalApiGeneratedloc = project.layout.buildDirectory.dir("openapi/dummyjson-external-api").get().asFile.toString()
+
+        serviceApiLoc = project.layout.buildDirectory.dir("openapi/service-api").get().asFile.toString()
+    }
+    dependencies {
+    }
+}
+
+plugins {
+    id 'java'
+    id 'maven-publish'
+    id "org.openapi.generator" version "${openapiGeneratorVersion}"
+    id 'org.springframework.boot' version '3.3.4'
+    id 'io.spring.dependency-management' version '1.1.6'
+    id 'info.solidsoft.pitest' version '1.15.0'
+    id 'jacoco'
+}
+
+allprojects {
+    group = 'nl.kabisa.service'
+    version = '1.0.0-SNAPSHOT'
+
+    repositories {
+        mavenCentral()
+        mavenLocal()
+    }
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+sourceSets {
+    main {
+        resources {
+            srcDirs = ["$projectDir/src/main/resources",
+                       "$internalApiGeneratedloc/src/main/resources"]
+        }
+        java {
+            srcDirs = ["$projectDir/src/main/java",
+                       "$internalApiGeneratedloc/src/main/java",
+                       "$dummyjsonExternalApiGeneratedloc/src/main/java"]
+        }
+    }
+}
+
+
+//Configures the dependency configurations for this project
+configurations {
+    // Custom configuration to group all service-api dependencies in. (used by the extractServiceApi task)
+    serviceApi
+}
+
+configurations.serviceApi {
+    transitive = false
+}
+
+dependencyManagement {
+    imports {
+        mavenBom "nl.kabisa.spring.boot.starter:service-spring-bom:${serviceSpringBomVersion}"
+    }
+}
+
+dependencies {
+    // spring boot starters dependencies
+    implementation 'nl.kabisa.spring.boot.starter:service-spring-boot-starter'
+    implementation 'nl.kabisa.spring.boot.starter:database-spring-boot-starter'
+
+    //apis openapi generates code from
+    serviceApi 'nl.kabisa.service.api:quotes-service-api:1.0.0-SNAPSHOT' //Internal Api
+    serviceApi 'nl.kabisa.service.api:dummyjson-external-api:1.0.0-SNAPSHOT'
+
+    //openapi generated code dependencies
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2'
+    implementation 'org.webjars:swagger-ui:4.15.5'
+    implementation 'com.google.code.findbugs:jsr305:3.0.2'
+    implementation 'org.openapitools:jackson-databind-nullable:0.2.6'
+    implementation 'org.springframework.data:spring-data-commons'
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+    implementation 'org.apache.httpcomponents.client5:httpclient5'
+
+    // Lombok and Mapstruct
+    compileOnly 'org.projectlombok:lombok'
+    compileOnly 'org.mapstruct:mapstruct:1.5.5.Final'
+    annotationProcessor 'org.projectlombok:lombok-mapstruct-binding:0.2.0'
+    annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
+    annotationProcessor 'org.projectlombok:lombok'
+
+    // Test
+    testRuntimeOnly 'com.h2database:h2'
+    testImplementation 'org.assertj:assertj-core'
+
+    testAnnotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
+    testImplementation 'org.mapstruct:mapstruct:1.5.5.Final'
+    testAnnotationProcessor 'org.projectlombok:lombok'
+    testCompileOnly 'org.projectlombok:lombok'
+    testImplementation 'com.zaxxer:HikariCP'
+    testImplementation "org.hsqldb:hsqldb"
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+bootJar {
+    archiveClassifier = ''
+    enabled = true
+}
+
+jar {
+    enabled = false
+}
+
+publishing {
+    publications {
+        create('bootJava', MavenPublication) {
+            artifact bootJar
+        }
+
+    }
+
+    repositories {
+        mavenCentral()
+        mavenLocal()
+    }
+}
+
+test {
+    useJUnitPlatform()
+    systemProperty "eureka.client.enabled", "false"                     // we don't want to register in eureka when testing
+    systemProperty "spring.cloud.config.enabled", "false"               // we don't want to use cloud config when testing
+}
+
+jacoco {
+    toolVersion = '0.8.12'
+}
+
+jacocoTestReport {
+    reports {
+        xml.required = true
+        csv.required = false
+        html.required = true
+        html.outputLocation = layout.buildDirectory.dir('jacocoHtml')
+    }
+}
+
+check {
+    dependsOn(jacocoTestReport)
+}
+
+pitest {
+    junit5PluginVersion = '1.2.1'
+    targetClasses = ['nl.kabisa.service.quotes.*']
+    threads = 2
+    // Mutations can cause infinite loops. Mutated tests time out after: <un mutated test duration> * timeoutFactor + timeoutConstInMillis
+    // Spring tests can take a long time, and consume a lot of threads; so greatly extend the timeout, and limit the number of test threads
+    timeoutFactor = 12.5 // Default is 1.25
+    timeoutConstInMillis = 30000 // Default is 3000
+    outputFormats = ['XML', 'HTML']
+    mutators = [
+            'CONDITIONALS_BOUNDARY',
+            'INCREMENTS',
+            'INVERT_NEGS',
+            'MATH',
+            'NEGATE_CONDITIONALS',
+            'VOID_METHOD_CALLS',
+            'EMPTY_RETURNS',
+            'FALSE_RETURNS',
+            'TRUE_RETURNS',
+            'PRIMITIVE_RETURNS'
+    ]
+    timestampedReports = false
+    useClasspathFile = true
+}
+
+bootRun {
+    javaLauncher = javaToolchains.launcherFor {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+    systemProperties = System.properties
+    systemProperty "spring.application.name", "quotes-service"
+}
+
+springBoot {
+    buildInfo {
+        properties {
+            time = null
+            additional = [
+                    by: System.properties['user.name'],
+                    operatingSystem: "${System.properties['os.name']} (${System.properties['os.version']})",
+                    time: new Date().format('dd-MM-yyyy'),
+                    info: 'quotes-service',
+                    gradleVersion:"${gradle.gradleVersion}",
+                    springBootVersion: dependencyManagement.importedProperties.springBootVersion,
+                    //springCloudVersion: dependencyManagement.importedProperties.springCloudVersion,
+            ]
+        }
+    }
+}
+
+tasks.register('extractServiceApi', Copy) {
+    dependsOn(configurations.serviceApi)
+
+    into "$serviceApiLoc"
+    from {
+        configurations.serviceApi.collect {
+            zipTree(it).matching {
+                include "${internalApiFilename}"
+                include "${dummyjsonExternalApiFilename}"
+            }
+        }
+    }
+}
+
+tasks.register('generateInternalApi',  org.openapitools.generator.gradle.plugin.tasks.GenerateTask) {
+    dependsOn(extractServiceApi)
+
+    generatorName = "spring"
+    library = "spring-boot"
+    inputSpec = "$serviceApiLoc/${internalApiFilename}"
+    outputDir = "$internalApiGeneratedloc"
+    apiPackage = "${internalApiBasepackage}.rest.api"
+    invokerPackage = "${internalApiBasepackage}.rest.application"
+    modelPackage = "${internalApiBasepackage}.rest.model"
+    modelNamePrefix = ""
+    generateModelTests = false
+    generateApiTests = false
+    configOptions = [
+            basePackage       : "${internalApiBasepackage}",
+            configPackage     : "${internalApiBasepackage}.rest.configuration",
+            delegatePattern   : "true",
+            artifactId        : "${rootProject.name}",
+            documentationProvider : "springdoc",
+            annotationLibrary : "swagger2",
+            dateLibrary       : "java8",
+            performBeanValidation : "true",
+            serializableModel : "true",
+            useTags : "true",
+            sourceFolder : "src/main/java",
+            useJakartaEe : "true",
+            useSpringBoot3 : "true"
+    ]
+}
+
+/*
+ * Trigger the openapi generator to build a client from the openapi input spec you can build a webflux or resttemplate client
+ *
+ * Put these properties in su-config/application.yml to configure connection, logging and endpoint url for the client
+ *
+ * su:
+ *   service:
+ *      sp-template-openapi-service:
+ *          gateway-url: http://px-sp.test.lan/sp-template-openapi-service
+ *          connection-timeout-millis: 30000
+ *          read-timeout-millis: 15000
+ *          logging: true
+ *
+ */
+tasks.register('generateDummyjsonExternalApi',  org.openapitools.generator.gradle.plugin.tasks.GenerateTask) {
+    dependsOn(extractServiceApi)
+
+    generatorName = "java"
+    library = "resttemplate" //webclient (you can choose between the webflux client and the resttemplate client)
+    inputSpec = "$serviceApiLoc/$dummyjsonExternalApiFilename"
+    outputDir = "$dummyjsonExternalApiGeneratedloc"
+    apiPackage = "${dummyjsonExternalApiBasepackage}.client.api"
+    invokerPackage = "${dummyjsonExternalApiBasepackage}.client.application"
+    modelPackage = "${dummyjsonExternalApiBasepackage}.client.model"
+    modelNamePrefix = ""
+    modelNameSuffix = "DummyApi"
+    generateModelTests = false
+    generateApiTests = false
+    configOptions = [
+            configPackage         : "${dummyjsonExternalApiBasepackage}.rest.configuration",
+            artifactId            : "dummyjson-service-client",
+            artifactDescription   : "Client for calling dummyjson external service",
+            dateLibrary           : "java8",
+            openApiNullable       : "true",
+            performBeanValidation : "true",
+            useBeanValidation     : "true",
+            serializableModel     : "true",
+            serializationLibrary  : "jackson",
+            sourceFolder          : "src/main/java",
+            useRuntimeException   : "true",
+            useJakartaEe          : "true"
+    ]
+}
+
+processResources {
+    filesMatching(["**/application.yml", "**/application.yaml"]) {
+        expand( project.properties )
+    }
+}
+
+processResources.dependsOn compileJava
+compileJava.dependsOn 'generateInternalApi', 'generateDummyjsonExternalApi'
+
+

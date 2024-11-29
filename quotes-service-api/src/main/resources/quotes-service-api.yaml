@@ -1,0 +1,470 @@
+#-------------------------------
+# openapi yaml structure:
+# -openapi       Version of openapi spec
+# -info          Api name, description and version
+# -servers       Basepath of all requests
+# -paths         Urls the service listens to
+# -components    Reusable model objects referenced to from the paths
+# -security      Security headers needed
+#-------------------------------
+openapi: "3.0.2"
+info:
+  x-api-id: 52a76924-cce8-429b-a95e-fe24e3dc12ab
+  x-api-type: service
+  title: API for quotes-service
+  version: "1.0.0"
+  description: API Definition for communication with the quotes-service
+  contact:
+    name: Developer
+    email: developer@company.com
+servers:
+  - url: /api
+
+paths:
+  #-------------------------------
+  # paths: Quotes
+  #-------------------------------
+  /quotes:
+    post:
+      tags:
+        - createQuote
+      summary: Create a new quote
+      operationId: createQuote
+      requestBody:
+        description: >
+          A Json object containing all fields needed to create a Quote
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateQuote'
+      responses:
+        '201':
+          description: >
+            A Json object containing the response after creating a quote
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Quote'
+        default:
+          $ref: '#/components/responses/Problem'
+    get:
+      tags:
+        - getQuotes
+      summary: Finds all quotes
+      operationId: getQuotes
+      responses:
+        '200':
+          description: Successful returned all quotes.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetQuotesResult'
+        default:
+          $ref: '#/components/responses/Problem'
+
+  /quotes/random:
+    get:
+      tags:
+        - getRandomQuote
+      summary: Finds a random quote.
+      description: >
+        Find a random quote
+      operationId: getRandomQuote
+      responses:
+        '200':
+          description: Succesful returned random quote
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/getRandomQuoteResult'
+        default:
+          $ref: '#/components/responses/Problem'
+
+  /quotes/{quote_id}:
+    parameters:
+      - $ref: '#/components/parameters/quote_id'
+    put:
+      tags:
+        - updateQuoteById
+      summary: Update a quote
+      operationId: updateQuoteById
+      requestBody:
+        description: >
+          A Json object containing all fields needed to update a Quote
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateQuote'
+      responses:
+        '204':
+          description: Succesful updated quote.
+        default:
+          $ref: '#/components/responses/Problem'
+    delete:
+      tags:
+        - deleteQuoteById
+      summary: Delete a quote by it's id
+      operationId: deleteQuoteById
+      responses:
+        '204':
+          description: Succesful deleted quote
+        default:
+          $ref: '#/components/responses/Problem'
+    get:
+      tags:
+        - getQuoteById
+      summary: Find a quote by id
+      operationId: getQuoteById
+      responses:
+        '200':
+          description: Succesful returned quote by it's id.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Quote'
+        default:
+          $ref: '#/components/responses/Problem'
+
+  #-------------------------------
+  # paths: Ratings
+  #-------------------------------
+  /quotes/{quote_id}/ratings:
+    parameters:
+      - $ref: '#/components/parameters/quote_id'
+    post:
+      tags:
+        - createRatingByQuoteId
+      summary: Create a new rating
+      operationId: createRatingByQuoteId
+      requestBody:
+        description: >
+          A Json object containing all fields needed to create a Rating
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateRating'
+      responses:
+        '201':
+          description: >
+            A Json object containing the response after creating a rating, this holds at least the newly created id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Rating'
+        default:
+          $ref: '#/components/responses/Problem'
+    get:
+      tags:
+        - getRatingsByQuoteId
+      summary: Find all ratings from a quote
+      operationId: getRatingsByQuoteId
+      responses:
+        '200':
+          description: Succesful returned all ratings from a quote.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetRatingsByQuoteIdResult'
+        default:
+          $ref: '#/components/responses/Problem'
+
+  /ratings/{rating_id}:
+    parameters:
+      - $ref: '#/components/parameters/rating_id'
+    put:
+      tags:
+        - updateRatingById
+      summary: Update a rating
+      operationId: updateRatingById
+      requestBody:
+        description: >
+          A Json object containing all fields needed to update a Rating
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateRating'
+      responses:
+        '204':
+          description: Succesful updated rating.
+        default:
+          $ref: '#/components/responses/Problem'
+    delete:
+      tags:
+        - deleteRatingById
+      summary: Delete a rating by it's id
+      operationId: deleteRatingById
+      responses:
+        '204':
+          description: Succesful deleted rating
+        default:
+          $ref: '#/components/responses/Problem'
+    get:
+      tags:
+        - getRatingById
+      summary: Find a rating by id
+      operationId: getRatingById
+      responses:
+        '200':
+          description: Succesful returned rating by it's id.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Rating'
+        default:
+          $ref: '#/components/responses/Problem'
+
+
+
+#-------------------------------
+# components: Reusable components used in $ref
+# - parameters        -> Generic path parameters
+# - responses         -> Reusable responses
+# - schemas           -> Reusable Model objects
+#-------------------------------
+components:
+  #-------------------------------
+  # components.parameters: Generic path parameters
+  #-------------------------------
+  parameters:
+    quote_id:
+      in: path
+      name: quote_id
+      required: true
+      schema:
+        $ref: '#/components/schemas/id'
+      description: id of the quote entity
+    rating_id:
+      in: path
+      name: rating_id
+      required: true
+      schema:
+        $ref: '#/components/schemas/id'
+      description: id of the rating entity
+
+  #-------------------------------
+  # components.responses: Reusable responses
+  #-------------------------------
+  responses:
+    Problem:
+      description: >
+        An error occurred - see status code and problem object for more information.
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+
+  #-------------------------------
+  # components.schemas: Reusable schemas (data models)
+  #-------------------------------
+  schemas:
+    # components.schemas: Generic properties
+    id:
+      type: integer
+      format: int64
+      minimum: 1
+      example: 1
+    version:
+      type: integer
+      format: int64
+      minimum: 0
+      example: 0
+
+    # components.schemas: Quote properties
+    quote_text:
+      type: string
+      minLength: 1
+      description: text of the quote
+      example: "This is a great place to work"
+    quote_author:
+      type: string
+      minLength: 1
+      description: author of the quote
+      example: "Mark"
+    quote_creation_date:
+      type: string
+      format: date
+      example: "2024-11-26"
+    quote_active:
+      type: boolean
+      example: true
+
+    # components.schemas: Rating properties
+    rating_user_id:
+      type: string
+      example: "mark"
+    rating_rating_enum:
+      type: string
+      x-extensible-enum:
+        - agree
+        - disagree
+        - neutral
+      example: "disagree"
+
+    # components.schemas: Quote models
+    Problem:
+      description: |
+        A standard problem detail definition according to https://tools.ietf.org/html/rfc7807.
+      type: object
+      required:
+        - title
+        - status
+      properties:
+        title:
+          type: string
+          description: |
+            A short, summary of the problem type.
+          example: Service Unavailable
+        status:
+          type: integer
+          format: int32
+          description: |
+            The HTTP status code generated by the origin server for this occurrence
+            of the problem.
+          minimum: 100
+          maximum: 600
+          exclusiveMaximum: true
+          example: 503
+        type:
+          type: string
+          format: uri
+          description: |
+            A string that identifies the problem type
+          default: default
+          example: constraint-violation
+        detail:
+          type: string
+          description: |
+            An explanation specific to this occurrence of the problem.
+          example: Connection to database timed out
+        instance:
+          type: string
+          format: uri
+          description: |
+            An absolute or relative URI that identifies the specific occurrence of the problem.
+          example: /quote/12345/rate
+
+    Quote:           # Can be referenced as '#/components/schemas/Quote'
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/id'
+        version:
+          $ref: '#/components/schemas/version'
+        text:
+          $ref: '#/components/schemas/quote_text'
+        author:
+          $ref: '#/components/schemas/quote_author'
+        creation_date:
+          $ref: '#/components/schemas/quote_creation_date'
+        active:
+          $ref: '#/components/schemas/quote_active'
+        ratings:
+          type: array
+          items:
+            $ref: '#/components/schemas/Rating'
+
+    Rating:       # Can be referenced as '#/components/schemas/Rating'
+      type: object
+      required:
+        - id
+        - user_id
+        - rating
+      properties:
+        id:
+          $ref: '#/components/schemas/id'
+        version:
+          $ref: '#/components/schemas/version'
+        user_id:
+          $ref: '#/components/schemas/rating_user_id'
+        rating:
+          $ref: '#/components/schemas/rating_rating_enum'
+
+    CreateQuote:      # Can be referenced as '#/components/schemas/CreateQuote'
+      type: object
+      required:
+        - text
+        - author
+      properties:
+        text:
+          $ref: '#/components/schemas/quote_text'
+        author:
+          $ref: '#/components/schemas/quote_author'
+
+    CreateRating:
+      type: object
+      required:
+        - rating
+      properties:
+        rating:
+          $ref: '#/components/schemas/rating_rating_enum'
+
+    UpdateQuote:       # Can be referenced as '#/components/schemas/UpdateQuote'
+      type: object
+      required:
+        - version
+        - text
+        - author
+        - active
+      properties:
+        version:
+          $ref: '#/components/schemas/version'
+        text:
+          $ref: '#/components/schemas/quote_text'
+        author:
+          $ref: '#/components/schemas/quote_author'
+        active:
+          $ref: '#/components/schemas/quote_active'
+
+    UpdateRating:
+      type: object
+      required:
+        - version
+        - user_id
+        - rating
+      properties:
+        version:
+          $ref: '#/components/schemas/version'
+        rating:
+          $ref: '#/components/schemas/rating_rating_enum'
+
+    GetQuotesResult:
+      type: object
+      properties:
+        quoteList:
+          type: array
+          items:
+            $ref: '#/components/schemas/Quote'
+
+    getRandomQuoteResult:
+      type: object
+      properties:
+        quote:
+         $ref: '#/components/schemas/Quote'
+
+    GetRatingsByQuoteIdResult:
+      type: object
+      properties:
+        ratingList:
+          type: array
+          items:
+            $ref: '#/components/schemas/Rating'
+
+  securitySchemes:
+    securitytoken:
+      type: apiKey
+      name: x-security-token
+      in: header
+      description: Requests should pass a x-security-token header.
+    userid:
+      type: apiKey
+      name: x-user-id
+      in: header
+      description: Requests should pass a x-user-id header.
+
+security:
+  - securitytoken: []
+    userid: []

@@ -1,0 +1,105 @@
+import org.openapitools.generator.gradle.plugin.tasks.ValidateTask
+
+buildscript {
+    ext {
+        internalApiFilename = 'quotes-service-api.yaml'
+        serviceApiDir = layout.buildDirectory.get().dir("/openapi/service-api")
+    }
+
+    dependencies {
+    }
+
+}
+
+plugins {
+    id 'java-library'
+    id 'maven-publish'
+    id 'org.openapi.generator' version '7.6.0'
+    id 'io.spring.dependency-management' version '1.1.5'
+}
+
+group = 'nl.kabisa.service.api'
+version = '1.0.0-SNAPSHOT'
+description 'Api for quotes-service'
+
+jar.enabled = false
+
+configurations {
+    // Custom configuration to group all service-api dependencies in. (used by the extractServiceApi task)
+    serviceApi {
+        //Don't inherit the dependencies from the projects, only the openapi specs are needed
+        transitive = false
+    }
+
+    // Applies for all dependencies
+    configureEach {
+        resolutionStrategy {
+            // fail eagerly on version conflict (includes transitive dependencies)
+            failOnVersionConflict()
+        }
+    }
+
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+
+    //Gradle sourceSets block (DSL) : Configures the source sets of this project.
+    sourceSets {
+        main {
+            resources {
+                srcDirs = ["$projectDir/src/main/resources"]
+            }
+        }
+    }
+}
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+}
+
+tasks.register('createOpenApiJar', Jar) {
+    //sourceSets.main.output is a collection of all output directories (compiled classes, processed resources, etc.)
+    //archiveClassifier = 'openapi'
+    from project.sourceSets.main.output
+    include '**/*.yaml'
+    includeEmptyDirs = false
+}
+
+//associating the task that produces the artifact with the 'archives' configuration
+//this will execute createOpenApiJar task and the created jar is associated with the archives configuration
+artifacts {
+    //configuration name and the task:
+    archives createOpenApiJar
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            artifact createOpenApiJar
+        }
+    }
+    repositories {
+        mavenCentral()
+        mavenLocal()
+    }
+}
+
+//Copy openapi yaml to build/service-api directory
+task extractServiceApi(type: Copy, dependsOn: configurations.serviceApi) {
+    into ("$serviceApiDir")
+    from("src/main/resources") {
+        include '**/*.yaml'
+    }
+}
+
+//validate the openapi yaml from the service-api directory
+task validateOpenapiSpec(type: ValidateTask, dependsOn: ['extractServiceApi']) {
+    inputSpec = "$serviceApiDir/$internalApiFilename"
+    recommend = true
+}
+
+compileJava.dependsOn tasks.validateOpenapiSpec

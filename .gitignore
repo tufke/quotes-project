@@ -1,0 +1,9 @@
+/build/
+/quotes-project.iml
+
+/.gradle/
+/service/.gradle/
+/quotes-service/quotes-service.log
+/quotes-service-api/.gradle/
+/quotes-service/build/
+/quotes-service/.gradle/
