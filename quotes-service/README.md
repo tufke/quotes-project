@@ -6,16 +6,16 @@ Read the following instructions to get an understanding of the service.
 
 
 # Table of Contents
-- [Functional summary](functional-summary)
-- [Generic configuration in spring boot starters](generic-configuration-in-spring-boot-starters)
-- [Service-api](service-api)
-- [Client folders](client-folders)
-- [Internal-api](internal-api)
-- [Implementing the apis](implementing-the-apis)
-- [Security](security)
-- [Mapping to and from api model](mapping-to-and-from-api-model)
-- [Database model](database-model)
-- [Dummyjson client configuration](dummyjson-client-configuration)
+- [Functional summary](#functional-summary)
+- [Generic configuration in spring boot starters](#generic-configuration-in-spring-boot-starters)
+- [Service-api](#service-api)
+- [Client folders](#client-folders)
+- [Internal-api](#internal-api)
+- [Implementing the apis](#implementing-the-apis)
+- [Security](#security)
+- [Mapping to and from api model](#mapping-to-and-from-api-model)
+- [Database model](#database-model)
+- [Dummyjson client configuration](#dummyjson-client-configuration)
 
 
 ## Functional summary

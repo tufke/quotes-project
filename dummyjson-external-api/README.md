@@ -7,16 +7,16 @@ Read the following instructions on how to set up an api project for an openapi g
 
 
 # Table of Contents
-- [service api project name](service-api-project-name)
-- [Api development guidelines](api-development-guidelines)
-- [Create a yaml file](create-a-yaml-file)
-- [Structure of yaml file](structure-of-yaml-file)
-- [sections openapi, info and servers](sections-openapi%2C-info-and-servers)
-- [Section paths](section-paths)
-- [Section security](section-security)
-- [Configure openapi validation](configure-openapi-validation)
-- [Add openapi validation to the build.gradle](add-openapi-validation-to-the-build%2Egradle)
-- [Configure openapi code generation (Optional)](configure-openapi-code-generation-(optional))
+- [service api project name](#service-api-project-name)
+- [Api development guidelines](#api-development-guidelines)
+- [Create a yaml file](#create-a-yaml-file)
+- [Structure of yaml file](#structure-of-yaml-file)
+- [sections openapi, info and servers](#sections-openapi%2C-info-and-servers)
+- [Section paths](#section-paths)
+- [Section security](#section-security)
+- [Configure openapi validation](#configure-openapi-validation)
+- [Add openapi validation to the build.gradle](#add-openapi-validation-to-the-build%2Egradle)
+- [Configure openapi code generation (Optional)](#configure-openapi-code-generation-(optional))
 
 
 ## service api project name

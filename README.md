@@ -3,9 +3,9 @@ backend coding assignment
 
 
 # Table of Contents
-- [The assignment](the-assignment)
-- [Elaboration](elaboration)
-- [Testing the assignment](testing-the-assignment)
+- [The assignment](#the-assignment)
+- [Elaboration](#elaboration)
+- [Testing the assignment](#testing-the-assignment)
 
 
 ## The assignment
