@@ -10,11 +10,11 @@ Read the following instructions on how to set up an api project for an openapi g
 - [Api development guidelines](#api-development-guidelines)
 - [Create a yaml file](#create-a-yaml-file)
 - [Structure of yaml file](#structure-of-yaml-file)
-- [sections openapi, info and servers](#sections-openapi%2C-info-and-servers)
+- [sections openapi, info and servers](#sections-openapi-info-and-servers)
 - [Section paths](#section-paths)
 - [Section security](#section-security)
 - [Configure openapi validation](#configure-openapi-validation)
-- [Add openapi validation to the build.gradle](#add-openapi-validation-to-the-build%2Egradle)
+- [Add openapi validation to the build.gradle](#add-openapi-validation-to-the-gradle-build)
 - [Configure openapi code generation (Optional)](#configure-openapi-code-generation-(optional))
 
 
@@ -59,7 +59,7 @@ An openapi yaml file must have the following sections:
 - components - Reusable model objects referenced to from the paths
 - security - Security headers needed
 
-### sections openapi, info and servers
+### sections openapi info and servers
 By default the **openapi**, **info** and **servers** section should look like this:
 
 ```yaml
@@ -163,7 +163,7 @@ userid too it will be an OR relationship, meaning one of the two headers must be
 To make sure the yaml is correct, validate it with the openapi validator.
 
 
-### Add openapi validation to the build.gradle
+### Add openapi validation to the gradle build
 To add validation of the openapi yaml file check the `build.gradle` file. below is example task to validate.
 
 ```groovy
